@@ -1,0 +1,66 @@
+OmniParser 是微软最近发布的一个 解析界面的库，主要将成果解析后转送给大模型体系进行更多的能力拓展。等于是将传统的UI界面，转换成了LLM大模型语言等Agent系统能直接理解和处理的输入源了。非常有意思。
+
+用官方的话来说：OmniParser是一种将用户界面截图解析为结构化、易于理解的元素的综合方法，它显著增强了 GPT-4V 生成能够准确地基于界面相应区域的操作的能力。
+
+以下来说说我的感受和理解。
+
+本文中的截图或者说配图都是用微信小程序【字形绘梦】制作，谢谢该软件的免费支持。AI大学堂: 2img.ai
+
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
+1 概要
+GPT-4V 和 GPT-4o 等大型视觉语言模型 (VLM) 的最新进展已显示出在驱动用户界面 (UI) 内运行的智能代理系统方面的巨大潜力。然而，这些多模态模型的全部潜力在实际应用中仍未得到充分挖掘，特别是在仅使用视觉输入充当跨不同操作系统和应用程序的通用代理方面。
+
+主要限制因素之一是缺乏一种强大的屏幕解析技术，该技术能够
+
+1) 可靠地识别用户界面中的可交互图标，
+
+2) 理解屏幕截图中各种元素的语义并准确地将预期操作与屏幕上的相应区域关联起来。
+
+了解一下 OmniParser，这是一个紧凑的屏幕解析模块，可以将 UI 屏幕截图转换为结构化元素。OmniParser 可以与各种模型一起使用，以创建能够对 UI 采取行动的代理。与 GPT-4V 一起使用时，它可以显著提高代理为界面区域生成精确接地操作的能力。
+
+2 主要内容
+开源项目地址：
+
+https://github.com/microsoft/OmniParser
+相关模型下载地址：
+
+https://huggingface.co/models?other=base_model:adapter:microsoft/OmniParser
+基础论文地址：
+
+https://arxiv.org/pdf/2408.00203
+2.1 安装
+準備好Conda，和虛擬環境，如下圖
+
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
+定位到Git獲取下來的目錄位置，在命令行中執行安裝指令 pip install -r requirements.txt，如下圖
+
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
+2.2 下載模型，放到位置中
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
+放到源代碼目錄下
+
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
+2.3 執行Demo # For v1
+python gradio_demo.py –icon_detect_model weights/icon_detect/best.pt –icon_caption_model florence2
+
+# For v1.5
+
+python gradio_demo.py –icon_detect_model weights/icon_detect_v1_5/model_v1_5.pt –icon_caption_model florence2
+
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
+3 创建 OmniParser
+整理专业数据集– OmniParser 的开发始于两个数据集的创建：
+
+可交互的图标检测数据集，该数据集从流行网页中精选而出，并带有注释以突出显示可点击和可操作的区域。
+图标描述数据集，旨在将每个 UI 元素与其对应的功能关联起来。此数据集是训练模型理解检测到的元素的语义的关键组件。
+微调检测和字幕模型– OmniParser 利用两个互补的模型：
+
+一种在可交互图标数据集上进行微调的检测模型，可以可靠地识别屏幕截图中的可操作区域。
+在图标描述数据集上训练的字幕模型，提取检测到的元素的功能语义，生成其预期动作的上下文准确描述。
+4 基准性能
+我们证明，通过解析结果，GPT-4V 在 ScreenSpot 基准测试中的表现得到了极大提升。在 Mind2Web 上，OmniParser +GPT-4V 的性能优于使用从 HTML 中提取的额外信息的 GPT-4V 代理。而在 AITW 基准测试中，OmniParser 的表现优于使用经过视图层次结构训练的专用 Android 图标检测模型增强的 GPT-4V。
+
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
+为了进一步证明 OmniParser 是现成视觉语言模型的插件选择，我们展示了 OmniParser 与最近发布的视觉语言模型 Phi-3.5-V 和 Llama-3.2-V 相结合的 ScreenSpot 基准性能。我们希望 OmniParser 可以作为一种通用且易于使用的工具，能够在 PC 和移动平台上解析一般用户屏幕，而无需依赖 Android 中的 HTML 和视图层次结构等额外信息。
+
+OmniParser，微软的用于纯视觉 GUI 分析的Agent
